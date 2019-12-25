@@ -1,4 +1,25 @@
-//
+////////////////////////////////////////////////////////////////////
+//                          _ooOoo_                               //
+//                         o8888888o                              //
+//                         88" . "88                              //
+//                         (| ^_^ |)                              //
+//                         O\  =  /O                              //
+//                      ____/`---'\____                           //
+//                    .'  \\|     |//  `.                         //
+//                   /  \\|||  :  |||//  \                        //
+//                  /  _||||| -:- |||||-  \                       //
+//                  |   | \\\  -  /// |   |                       //
+//                  | \_|  ''\---/''  |   |                       //
+//                  \  .-\__  `-`  ___/-. /                       //
+//                ___`. .'  /--.--\  `. . ___                     //
+//              ."" '<  `.__\_<|>_/__.'  >'"".                    //
+//            | | :  `- \`.;`\ _ /`;.`/ - ` : | |                 //
+//            \  \ `-.   \_ __\ /__ _/   .-` /  /                 //
+//      ========`-.____`-.___\_____/___.-`____.-'========         //
+//                           `=---='                              //
+//      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        //
+//         佛祖保佑            永无BUG              永不修改          //
+////////////////////////////////////////////////////////////////////
 //  AppDelegate.swift
 //  learnSwift
 //
@@ -11,27 +32,40 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+    var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        customRootController()
+        
+        addNotification()
+        
         return true
     }
-
-    // MARK: UISceneSession Lifecycle
-
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        // Called when a new scene session is being created.
-        // Use this method to select a configuration to create the new scene with.
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    // MARK: rootViewController
+    private func customRootController(){
+        window = UIWindow(frame: ScreenBounds)
+        window!.makeKeyAndVisible()
+        let isFristOpen = UserDefaults.standard.object(forKey: "isFristOpenApp")
+        if isFristOpen == nil {
+            window?.rootViewController = GuideViewController()
+            UserDefaults.standard.set("yes", forKey: "isFristOpenApp")
+            UserDefaults.standard.synchronize()
+        }else{
+            window?.rootViewController = YCTabBarController()
+        }
     }
 
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+    func addNotification() {
+        NotificationCenter.default.addObserver(self, selector:#selector(changeRootVC), name: NSNotification.Name(rawValue: GuideViewControllerDidFinish), object: nil)
     }
-
+    
+    @objc func changeRootVC(){
+        window?.rootViewController = nil
+        window?.rootViewController = YCTabBarController()
+        window!.makeKeyAndVisible()
+    }
 
 }
 
